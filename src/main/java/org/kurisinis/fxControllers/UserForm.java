@@ -47,10 +47,10 @@ public class UserForm {
                     passwordField.getText(),
                     nameField.getText(),
                     surnameField.getText(),
-                    phoneNumberField.getText());
+                    phoneNumberField.getText()); //isAdmin true nustatyti reikia
             genericHibernate.create(user);
 
-        }else if (restaurantRadio.isSelected()) {
+        }else if (clientRadio.isSelected()) {
             BasicUser basicUser = new BasicUser();
             passwordField.getText();
             nameField.getText();

@@ -1,6 +1,5 @@
 package org.kurisinis.model;
 
-//import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-//MappedSuperclass
+//@MappedSuperclass
 
 public class User implements Serializable {
     @Id
@@ -37,6 +36,7 @@ public class User implements Serializable {
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
+        //this.isAdmin = true;
     }
 
     public User(String login, String password) {

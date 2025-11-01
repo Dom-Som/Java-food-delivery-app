@@ -11,6 +11,7 @@ module org.example.kurisinis{
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
+    //requires org.example.kurisinis;
 
     opens org.kurisinis to javafx.fxml, org.hibernate.orm.core, jakarta.persistence;
     exports org.kurisinis;

@@ -1,20 +1,20 @@
 package org.kurisinis.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 
-public class Review {
-    protected int id;
-    protected int rate;
+public class Review extends ChatMessage{
+    @ManyToOne
+    private Restaurant restaurant;
+    @OneToOne
+    private FoodOrder foodOrder;
     protected String text;
 
-    public Review(int id, int rate, String text) {
-        this.id = id;
-        this.rate = rate;
-        this.text = text;
-    }
 
 }
