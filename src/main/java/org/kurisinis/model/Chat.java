@@ -30,14 +30,4 @@ public class Chat {
     private LocalDateTime createdAt;
     private LocalDateTime lastMessageAt;
     private boolean isActive;
-/*
-    public Chat(int id, BasicUser customer, Driver driver, FoodOrder order, LocalDateTime createdAt, LocalDateTime lastMessageAt, boolean isActive) {
-        this.id = id;
-        this.customer = customer;
-        this.driver = driver;
-        this.order = order;
-        this.createdAt = createdAt;
-        this.lastMessageAt = lastMessageAt;
-        this.isActive = isActive;
-    }*/
 }

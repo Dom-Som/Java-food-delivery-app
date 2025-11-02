@@ -1,9 +1,6 @@
 package org.kurisinis.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,13 +19,17 @@ public class Restaurant extends BasicUser{
     private List<Cuisine> dishes;
     private String workHours;
     private double rating;
-    @OneToMany
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FoodOrder> orders ;
 
-    public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address, List<Cuisine> dishes, String workHours, double rating) {
-        super(login, password, name, surname, phoneNumber, address);
+    public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin, List<Cuisine> dishes, String workHours, double rating) {
+        super(login, password, name, surname, phoneNumber, address, isAdmin);
         this.dishes = dishes;
         this.workHours = workHours;
         this.rating = rating;
+    }
+
+    public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin) {
+        super(login, password, name, surname, phoneNumber, address, isAdmin);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.Persistence;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -28,14 +29,8 @@ public class LoginForm {
     public PasswordField passwordField;
 
     private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("coursework");
-/*
-    public void validateAndLoad() {
-        User user = new User(loginField.getText(), passwordField.getText());
-        System.out.println(loginField.getText()
-        + " " + passwordField.getText());
-    }*/
 
-    public void registerNewUser() throws IOException {
+    public void registerNewUser(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
 
@@ -47,18 +42,21 @@ public class LoginForm {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
+        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        currentStage.close();
     }
 
-    public void validateAndLoad() throws IOException { //neveikia, reikia sutvarky validation
+    public void validateAndLoad(ActionEvent event) throws IOException {
         CustomHibernate customHibernate = new CustomHibernate(entityManagerFactory);
         User user = customHibernate.getUserByCredentials(loginField.getText(), passwordField.getText());
         if(user != null){
-            System.out.println("RAAAAAAAAAAAAAAAAAAAAAAAA!!!!!!!!!!11");
             FXMLLoader fxmlLoader = new FXMLLoader (HelloApplication.class.getResource("/org/example/kurisinis/main-form.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
             Stage stage = (Stage) loginField.getScene().getWindow();
             stage.setScene(scene);
             stage.show();
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            currentStage.close();
         } else{
             FxUtils.generateAlert(Alert.AlertType.INFORMATION, "Oh no", "User Login Failed", "No such user exists.");
         }

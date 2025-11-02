@@ -30,8 +30,8 @@ public class Driver extends BasicUser{
     @OneToMany(mappedBy = "driver",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FoodOrder> myOrders;
 
-    public Driver(String login, String password, String name, String surname, String phoneNumber, String address, String licence, LocalDate bDate, VehicleType vehicleType, boolean isAvailable, double rating, int totalDeliveries, String vehicleInfo) {
-        super(login, password, name, surname, phoneNumber, address);
+    public Driver(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin, String licence, LocalDate bDate, VehicleType vehicleType, boolean isAvailable, double rating, int totalDeliveries, String vehicleInfo) {
+        super(login, password, name, surname, phoneNumber, address, isAdmin);
         this.licence = licence;
         this.bDate = bDate;
         this.vehicleType = vehicleType;
@@ -41,5 +41,16 @@ public class Driver extends BasicUser{
         this.vehicleInfo = vehicleInfo;
        // this.chats = new ArrayList<>();
     }
+
+    public Driver(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin, String licence, LocalDate bDate, VehicleType vehicleType) {
+        super(login, password, name, surname, phoneNumber, address, isAdmin);
+        this.licence = licence;
+        this.bDate = bDate;
+        this.vehicleType = vehicleType;
+    }
+    public Driver(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin) {
+        super(login, password, name, surname, phoneNumber, address, isAdmin);
+    }
+
 }
 

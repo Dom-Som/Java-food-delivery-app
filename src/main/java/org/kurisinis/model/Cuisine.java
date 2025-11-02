@@ -17,15 +17,17 @@ public class Cuisine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
-    //@ManyToMany
-    @Transient
+    @ManyToMany(mappedBy = "items", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FoodOrder> orders;
-    protected String ingredients;
-    protected String allergens;
-    protected String portionSize;
+    @Enumerated(EnumType.STRING)
+    protected Ingredients ingredients;
+    @Enumerated(EnumType.STRING)
+    protected Allergens allergens;
+    @Enumerated(EnumType.STRING)
+    protected PortionSize portionSize;
     protected double price;
 
-    public Cuisine(int id, String ingredients, String allergens, String portionSize, double price) {
+    public Cuisine(int id, Ingredients ingredients, Allergens allergens, PortionSize portionSize, double price) {
         this.id = id;
         this.ingredients = ingredients;
         this.allergens = allergens;

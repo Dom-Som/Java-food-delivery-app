@@ -23,8 +23,9 @@
       <TextField fx:id="surnameField" layoutX="29.0" layoutY="237.0" promptText="Surname" />
       <TextField fx:id="phoneNumberField" layoutX="29.0" layoutY="284.0" promptText="Phone number" />
       <TextField fx:id="addressField" layoutX="204.0" layoutY="95.0" prefHeight="25.0" prefWidth="175.0" promptText="Address" />
-      <Button layoutX="191.0" layoutY="337.0" mnemonicParsing="false" onAction="#createNewUser" text="Save" />
+      <Button layoutX="118.0" layoutY="337.0" mnemonicParsing="false" onAction="#createNewUser" text="Save" />
       <DatePicker layoutX="205.0" layoutY="144.0" />
       <DatePicker layoutX="204.0" layoutY="194.0" />
+      <Button layoutX="249.0" layoutY="337.0" mnemonicParsing="false" onAction="#returnToLoginForm" text="Return to Login" />
    </children>
 </AnchorPane>

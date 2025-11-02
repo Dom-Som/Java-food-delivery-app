@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-//@MappedSuperclass
 
 public class User implements Serializable {
     @Id
@@ -30,13 +29,13 @@ public class User implements Serializable {
     protected LocalDate dateUpdated;
     protected boolean isAdmin;
 
-    public User(String login, String password, String name, String surname, String phoneNumber) {
+    public User(String login, String password, String name, String surname, String phoneNumber, boolean isAdmin) {
         this.login = login;
         this.password = password;
         this.name = name;
         this.surname = surname;
         this.phoneNumber = phoneNumber;
-        //this.isAdmin = true;
+        this.isAdmin = isAdmin;
     }
 
     public User(String login, String password) {

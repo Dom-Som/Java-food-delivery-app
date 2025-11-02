@@ -15,6 +15,4 @@ public class Review extends ChatMessage{
     @OneToOne
     private FoodOrder foodOrder;
     protected String text;
-
-
 }

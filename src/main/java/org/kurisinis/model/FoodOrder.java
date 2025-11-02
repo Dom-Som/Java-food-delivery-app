@@ -24,8 +24,7 @@ public class FoodOrder {
     private Driver driver;
     @ManyToOne
     private Restaurant restaurant;
-    //@ManyToMany(mappedBy = "order", cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
-    @Transient
+    @ManyToMany
     protected List<Cuisine> items;
     protected double price;
     @OneToOne

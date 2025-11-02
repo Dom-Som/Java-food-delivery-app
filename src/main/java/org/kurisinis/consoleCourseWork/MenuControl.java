@@ -25,8 +25,8 @@ public class MenuControl {
                     System.out.println("Enter User data (User class):username;password;name;surname;phoneNum;address; licence; bdate;vehicle");
                     var input = scanner.nextLine();
                     String[] info = input.split(";");
-                    User user = new User(info[0], info[1], info[2], info[3], info[4]);
-                    wolt.getAllSystemUsers().add(user);
+                   // User user = new User(info[0], info[1], info[2], info[3], info[4]);
+                    //wolt.getAllSystemUsers().add(user);
                   //  Driver driver = new Driver(info[0], info[1], info[2], info[3], info[4], info[5], info[6], LocalDate.parse(info[7]), VehicleType.valueOf(info[8]));
                    // Utils.writeUserToFile(user);
                     break;

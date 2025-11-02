@@ -30,17 +30,11 @@ public class BasicUser extends User{
     @OneToMany(mappedBy = "feedbackSender",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     protected List<ChatMessage> feedback;
 
-    public BasicUser(String login, String password, String name, String surname, String phoneNumber, String address) {
-        super(login, password, name, surname, phoneNumber);
+    public BasicUser(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin) {
+        super(login, password, name, surname, phoneNumber, isAdmin);
         this.address = address;
-       // @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, fetch = LAZY)
         this.myOrders = new ArrayList<>();
         this.myReviews = new ArrayList<>();
         this.feedback = new ArrayList<>();
-    }
-
-    public BasicUser(String login, String password, String name, String surname, String phoneNumber) {
-        super(login, password, name, surname, phoneNumber);
-        this.address = address;
     }
 }
