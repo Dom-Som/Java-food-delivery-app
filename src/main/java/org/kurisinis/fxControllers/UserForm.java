@@ -2,6 +2,7 @@ package org.kurisinis.fxControllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,13 +11,14 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.kurisinis.HelloApplication;
+import org.kurisinis.consoleCourseWork.utils.FxUtils;
+import org.kurisinis.hibernateControl.CustomHibernate;
 import org.kurisinis.hibernateControl.GenericHibernate;
-import org.kurisinis.model.BasicUser;
-import org.kurisinis.model.Driver;
-import org.kurisinis.model.Restaurant;
-import org.kurisinis.model.User;
+import org.kurisinis.model.*;
 
 import java.io.IOException;
 
@@ -41,13 +43,49 @@ public class UserForm {
     public RadioButton clientRadio;
     @FXML
     public RadioButton driverRadio;
+    @FXML
+    public DatePicker bdateField;
+    @FXML
+    public TextField licenseField;
+    @FXML
+    public ComboBox<VehicleType> vehicleTypeField = new ComboBox<>();
+    @FXML
+    public Pane driverFields;
+    @FXML
+    public AnchorPane userFields;
+    @FXML
+    public TextField workingHoursField;
+    @FXML
+    public Button updateButton;
 
     private EntityManagerFactory entityManagerFactory ;
     private GenericHibernate genericHibernate;
+    private User userForUpdate;
+    private boolean isForUpdate;
 
-    public void setData(EntityManagerFactory entityManagerFactory) {
+
+    public void setData(EntityManagerFactory entityManagerFactory, User user, boolean isForUpdate) {
         this.entityManagerFactory = entityManagerFactory;
         this.genericHibernate = new GenericHibernate(entityManagerFactory);
+        this.userForUpdate = user;
+        this.isForUpdate = isForUpdate;
+        fillUserDataForUpdate();
+        vehicleTypeField.getItems().addAll(VehicleType.values());//reiktu nukelt kazkur kitur sitas eilutes
+        fillUserDataForUpdate();
+        disableFields();
+
+    }
+
+    private void fillUserDataForUpdate() {
+        if (userForUpdate != null) {
+            if(userForUpdate instanceof User && isForUpdate) {
+                loginField.setText(userForUpdate.getLogin());
+                passwordField.setText(userForUpdate.getPassword());
+                // add other fields as needed
+            }
+        } else {
+            updateButton.setVisible(false);
+        }
     }
 
 
@@ -79,31 +117,47 @@ public class UserForm {
                     surnameField.getText(),
                     phoneNumberField.getText(),
                     addressField.getText(),
-                    false);
+                    false,
+                    licenseField.getText(),
+                    bdateField.getValue(),
+                    vehicleTypeField.getValue()
+                    );
             genericHibernate.create(driver);
         }else {
-            Restaurant restaurant = new Restaurant( //finish with specific fields
+            Restaurant restaurant = new Restaurant(
                     loginField.getText(),
                     passwordField.getText(),
                     nameField.getText(),
                     surnameField.getText(),
                     phoneNumberField.getText(),
                     addressField.getText(),
-                    false);
+                    false,
+                    workingHoursField.getText()
+                    );
             genericHibernate.create(restaurant);
         }
     }
     public void disableFields() {
         if(userRadio.isSelected()) {
-            //addressField.setDisable(true);
+            userFields.setVisible(true);
             addressField.setVisible(false);
-            //enable user fields, disable other fields
+            workingHoursField.setVisible(false);
+            driverFields.setVisible(false);
         }else if(restaurantRadio.isSelected()) {
-            addressField.setDisable(false);
+            userFields.setVisible(true);
+            addressField.setVisible(true);
+            workingHoursField.setVisible(true);
+            driverFields.setVisible(false);
         }else if(clientRadio.isSelected()) {
-
+            userFields.setVisible(true);
+            addressField.setVisible(true);
+            workingHoursField.setVisible(false);
+            driverFields.setVisible(false);
         }else{
-
+            userFields.setVisible(true);
+            addressField.setVisible(true);
+            workingHoursField.setVisible(false);
+            driverFields.setVisible(true);
         }
     }
 
@@ -117,5 +171,8 @@ public class UserForm {
         stage.show();
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         currentStage.close();
+    }
+
+    public void updateUser(ActionEvent actionEvent) {
     }
 }

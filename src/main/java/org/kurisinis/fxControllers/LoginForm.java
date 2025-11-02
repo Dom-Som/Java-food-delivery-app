@@ -35,7 +35,7 @@ public class LoginForm {
         Parent parent = fxmlLoader.load();
 
         UserForm userForm = fxmlLoader.getController();
-        userForm.setData(entityManagerFactory);
+        userForm.setData(entityManagerFactory, null, false);
 
         Scene scene = new Scene(parent);
         Stage stage = new Stage();
@@ -51,18 +51,22 @@ public class LoginForm {
         User user = customHibernate.getUserByCredentials(loginField.getText(), passwordField.getText());
         if(user != null){
             FXMLLoader fxmlLoader = new FXMLLoader (HelloApplication.class.getResource("/org/example/kurisinis/main-form.fxml"));
-            Scene scene = new Scene(fxmlLoader.load());
-            Stage stage = (Stage) loginField.getScene().getWindow();
+            Parent parent = fxmlLoader.load();
+
+            MainForm mainForm = fxmlLoader.getController();
+            mainForm.setData(entityManagerFactory, user);
+
+
+            Scene scene = new Scene(parent);
+            Stage stage = new Stage();
+            stage.setTitle("Hello!");
             stage.setScene(scene);
             stage.show();
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             currentStage.close();
         } else{
-            FxUtils.generateAlert(Alert.AlertType.INFORMATION, "Oh no", "User Login Failed", "No such user exists.");
+            FxUtils.generateAlert(Alert.AlertType.INFORMATION, "Oh no", "User Login Failed", "No such user or wrong credentials!");
         }
-
-
-
     }
 
 }

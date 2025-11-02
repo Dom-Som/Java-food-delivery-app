@@ -13,6 +13,7 @@ module org.example.kurisinis{
     requires org.kordamp.bootstrapfx.core;
     requires javafx.graphics;
 
+
     opens org.kurisinis to javafx.fxml, org.hibernate.orm.core, jakarta.persistence;
     exports org.kurisinis;
     opens org.kurisinis.fxControllers to javafx.fxml;

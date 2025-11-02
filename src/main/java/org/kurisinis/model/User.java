@@ -1,10 +1,7 @@
 package org.kurisinis.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -42,4 +39,8 @@ public class User implements Serializable {
         this.login = login;
         this.password = password;
     }
+
+    @Override
+    public String toString() { return "Name: " + name + " Surname: " + surname + " Phone number: " + phoneNumber; }
+
 }

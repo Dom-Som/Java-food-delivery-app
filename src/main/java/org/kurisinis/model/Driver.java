@@ -24,7 +24,6 @@ public class Driver extends BasicUser{
     private boolean isAvailable;
     private double rating;
     private int totalDeliveries;
-    private String vehicleInfo;
     @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Chat> chats;
     @OneToMany(mappedBy = "driver",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -38,8 +37,6 @@ public class Driver extends BasicUser{
         this.isAvailable = isAvailable;
         this.rating = rating;
         this.totalDeliveries = totalDeliveries;
-        this.vehicleInfo = vehicleInfo;
-       // this.chats = new ArrayList<>();
     }
 
     public Driver(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin, String licence, LocalDate bDate, VehicleType vehicleType) {
@@ -47,9 +44,6 @@ public class Driver extends BasicUser{
         this.licence = licence;
         this.bDate = bDate;
         this.vehicleType = vehicleType;
-    }
-    public Driver(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin) {
-        super(login, password, name, surname, phoneNumber, address, isAdmin);
     }
 
 }
