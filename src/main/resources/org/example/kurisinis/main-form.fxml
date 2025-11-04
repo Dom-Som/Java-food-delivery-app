@@ -33,9 +33,9 @@
                               <TableColumn fx:id="dummyCol" prefWidth="62.0" text="Action" />
                           </columns>
                         </TableView>
-                        <Button layoutX="86.0" layoutY="471.0" mnemonicParsing="false" onAction="#addUser" text="Create new User" />
-                        <Button layoutX="389.0" layoutY="471.0" mnemonicParsing="false" onAction="#loadUser" text="Update" />
-                        <Button layoutX="580.0" layoutY="471.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete" />
+                        <Button layoutX="184.0" layoutY="471.0" mnemonicParsing="false" onAction="#addUser" text="Create new User" />
+                        <Button layoutX="441.0" layoutY="471.0" mnemonicParsing="false" onAction="#loadUser" text="Update" />
+                        <Button layoutX="675.0" layoutY="471.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete" />
                      </children>
                   </AnchorPane>
             </content>

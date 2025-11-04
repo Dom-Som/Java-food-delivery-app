@@ -40,21 +40,22 @@ public class GenericHibernate {
             entityManager.merge(entity);
             entityManager.getTransaction().commit();
         }catch(Exception e) {
-            //klaidos atveju panaudosiu alertus
+            FxUtils.generateAlert(Alert.AlertType.ERROR, "DB erro", "Update failed", "Entity not found in DB.");
 
         }finally {
             if(entityManager != null) entityManager.close();
         }
 
     }
-    public <T> void delete(T entity, int id) {
+    public <T> void delete(Class<T> entityClass, int id) {
         try {
             entityManager = entityManagerFactory.createEntityManager();
             entityManager.getTransaction().begin();
+            T entity = entityManager.find(entityClass, id);
             entityManager.remove(entity);
             entityManager.getTransaction().commit();
         }catch(Exception e) {
-            //klaidos atveju panaudosiu alertus
+            FxUtils.generateAlert(Alert.AlertType.ERROR, "DB error", "Deletion failed", "idk");
 
         }finally {
             if(entityManager != null) entityManager.close();
@@ -78,4 +79,13 @@ public class GenericHibernate {
         }
         return list;
     }
+    public <T> T getEntityById(Class<T> entityClass, int id) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            return em.find(entityClass, id);
+        } finally {
+            em.close();
+        }
+    }
+
 }

@@ -23,6 +23,8 @@ import org.kurisinis.model.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 public class UserForm implements Initializable {
@@ -60,6 +62,8 @@ public class UserForm implements Initializable {
     public TextField workingHoursField;
     @FXML
     public Button updateButton;
+    @FXML
+    public Button returnButton;
 
     private EntityManagerFactory entityManagerFactory ;
     private GenericHibernate genericHibernate;
@@ -84,6 +88,7 @@ public class UserForm implements Initializable {
     private void fillUserDataForUpdate() {
         if (userForUpdate != null && isForUpdate) {
             updateButton.setVisible(true);
+            returnButton.setVisible(false);
              if (userForUpdate instanceof Restaurant && isForUpdate) {
                 restaurantRadio.setSelected(true);
                 disableFields();
@@ -214,6 +219,41 @@ public class UserForm implements Initializable {
         currentStage.close();
     }
 
-    public void updateUser(ActionEvent actionEvent) {
+    public void updateUser() {
+        if(userForUpdate instanceof Restaurant) {
+            userForUpdate.setLogin(loginField.getText());
+            userForUpdate.setPassword(passwordField.getText());
+            userForUpdate.setName(nameField.getText());
+            userForUpdate.setSurname(surnameField.getText());
+            userForUpdate.setPhoneNumber(phoneNumberField.getText());
+            ((Restaurant) userForUpdate).setAddress(addressField.getText());
+            ((Restaurant) userForUpdate).setWorkHours(workingHoursField.getText());
+        } else if (userForUpdate instanceof Driver) {
+            userForUpdate.setLogin(loginField.getText());
+            userForUpdate.setPassword(passwordField.getText());
+            userForUpdate.setName(nameField.getText());
+            userForUpdate.setSurname(surnameField.getText());
+            userForUpdate.setPhoneNumber(phoneNumberField.getText());
+            ((Driver) userForUpdate).setAddress(addressField.getText());
+            ((Driver) userForUpdate).setLicence(licenseField.getText());
+            ((Driver) userForUpdate).setVehicleType(vehicleTypeField.getValue());
+            ((Driver) userForUpdate).setBDate(bdateField.getValue());
+        } else if(userForUpdate instanceof BasicUser) {
+            userForUpdate.setLogin(loginField.getText());
+            userForUpdate.setPassword(passwordField.getText());
+            userForUpdate.setName(nameField.getText());
+            userForUpdate.setSurname(surnameField.getText());
+            userForUpdate.setPhoneNumber(phoneNumberField.getText());
+            ((BasicUser) userForUpdate).setAddress(addressField.getText());
+        } else{
+            userForUpdate.setLogin(loginField.getText());
+            userForUpdate.setPassword(passwordField.getText());
+            userForUpdate.setName(nameField.getText());
+            userForUpdate.setSurname(surnameField.getText());
+            userForUpdate.setPhoneNumber(phoneNumberField.getText());
+            userForUpdate.setAdmin(true);
+        }
+        genericHibernate.update(userForUpdate);
+
     }
 }

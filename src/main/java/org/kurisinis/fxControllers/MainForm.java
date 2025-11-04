@@ -18,6 +18,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kurisinis.HelloApplication;
+import org.kurisinis.consoleCourseWork.utils.FxUtils;
 import org.kurisinis.hibernateControl.CustomHibernate;
 import org.kurisinis.model.*;
 
@@ -195,7 +196,6 @@ public class MainForm implements Initializable {
                 userObservableList.add(userTableParameters);
             }
             userTable.setItems(userObservableList);
-            //userTable.getItems().addAll(userObservableList);
 
         } else if (altTab.isSelected()) {
             List<User> userList = customHibernate.getAllRecords(User.class);
@@ -216,8 +216,6 @@ public class MainForm implements Initializable {
         }
 
     }
-
-    //<editor-fold desc="Alternative tab functions">
     public void openUserForm() throws IOException {
 
     }
@@ -225,12 +223,11 @@ public class MainForm implements Initializable {
     public void loadUser(ActionEvent actionEvent) throws IOException{
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
-
-        // User selectedUser = userListField.getSelectionModel().getSelectedItem();
+        UserTableParameters selectedUserParams = userTable.getSelectionModel().getSelectedItem();
+        User selectedUser = customHibernate.getEntityById(User.class, selectedUserParams.getId());
 
         UserForm userForm = fxmlLoader.getController();
-        UserTableParameters selectedUser = userTable.getSelectionModel().getSelectedItem();
-        userForm.setData(entityManagerFactory, convertUserTableParamsToUserClass(selectedUser), true);
+        userForm.setData(entityManagerFactory, selectedUser, true);
 
         Stage stage = new Stage();
         Scene scene = new Scene(parent);
@@ -238,26 +235,12 @@ public class MainForm implements Initializable {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
-    }
-
-    private User convertUserTableParamsToUserClass(UserTableParameters selectedUser) {
-        if(selectedUser.getUserType().equals("Driver")) {
-            //return new Driver;
-            return null;
-        } else if (selectedUser.getUserType().equals("Restaurant")) {
-            return new Restaurant(selectedUser.getLogin(), selectedUser.getPassword(), selectedUser.getName(), selectedUser.getSurname(), selectedUser.getPhoneNumber(), selectedUser.getAddress(), selectedUser.getWorkHours());
-        } else if(selectedUser.getUserType().equals("BasicUser")) {
-            return new BasicUser(selectedUser.getLogin(), selectedUser.getPassword(), selectedUser.getName(), selectedUser.getSurname(), selectedUser.getPhoneNumber(), selectedUser.getAddress());
-        } else {
-            return new User(selectedUser.getLogin(), selectedUser.getPassword(), selectedUser.getName(), selectedUser.getSurname(), selectedUser.getPhoneNumber());
-        }
+        setData(entityManagerFactory, currentUser);
     }
 
     public void addUser(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
-
-      //  User selectedUser = userListField.getSelectionModel().getSelectedItem();
 
         UserForm userForm = fxmlLoader.getController();
         userForm.setData(entityManagerFactory, null, false);
@@ -268,13 +251,21 @@ public class MainForm implements Initializable {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
+        setData(entityManagerFactory, currentUser);
     }
 
-    public void deleteUser() { //not working :'(
-        User selectedUser = userListField.getSelectionModel().getSelectedItem();
-        customHibernate.delete(User.class, selectedUser.getId());
+    public void deleteUser() {
+        try{
+            UserTableParameters selectedParams = userTable.getSelectionModel().getSelectedItem();
+            boolean confirmed = FxUtils.confirmationWindow("Confirm Deletion", "Are you sure you want to delete this user?", "This action cannot be undone!");
+
+            if (confirmed) {
+                User selectedUser = customHibernate.getEntityById(User.class, selectedParams.getId());
+                customHibernate.delete(User.class, selectedUser.getId());
+                reloadTableData();
+            }
+        }catch(Exception e){
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "You have no user selected for deletion!","Please make sure you have selected the user you want to delete");
+        }
     }
-
-
-    //</editor-fold>
 }
