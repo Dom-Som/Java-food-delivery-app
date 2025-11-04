@@ -32,11 +32,11 @@
             <TextField fx:id="phoneNumberField" layoutX="18.0" layoutY="195.0" promptText="Phone number" />
          </children>
       </AnchorPane>
-      <Pane fx:id="driverFields" layoutX="210.0" layoutY="65.0" prefHeight="235.0" prefWidth="200.0">
+      <Pane fx:id="driverFields" layoutX="210.0" layoutY="140.0" prefHeight="177.0" prefWidth="200.0">
          <children>
-            <DatePicker fx:id="bdateField" layoutX="2.0" layoutY="130.0" promptText="Birth date" />
-            <ComboBox fx:id="vehicleTypeField" layoutX="2.0" layoutY="170.0" prefHeight="25.0" prefWidth="175.0" promptText="Vehicle type" />
-            <TextField fx:id="licenseField" layoutX="2.0" layoutY="75.0" prefHeight="25.0" prefWidth="175.0" promptText="License number" />
+            <DatePicker fx:id="bdateField" layoutX="2.0" layoutY="54.0" promptText="Birth date" />
+            <ComboBox fx:id="vehicleTypeField" layoutX="2.0" layoutY="99.0" prefHeight="25.0" prefWidth="175.0" promptText="Vehicle type" />
+            <TextField fx:id="licenseField" layoutX="2.0" layoutY="2.0" prefHeight="25.0" prefWidth="175.0" promptText="License number" />
          </children>
       </Pane>
       <Button fx:id="updateButton" layoutX="172.0" layoutY="337.0" mnemonicParsing="false" onAction="#updateUser" text="Update" />

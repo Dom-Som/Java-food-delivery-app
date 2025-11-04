@@ -6,7 +6,6 @@ import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaQuery;
 import javafx.scene.control.Alert;
 import org.kurisinis.consoleCourseWork.utils.FxUtils;
-import org.kurisinis.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,7 @@ public class GenericHibernate {
         }
 
     }
-    public <T> void delete(T entity) {
+    public <T> void delete(T entity, int id) {
         try {
             entityManager = entityManagerFactory.createEntityManager();
             entityManager.getTransaction().begin();
@@ -73,7 +72,7 @@ public class GenericHibernate {
             list = q.getResultList();
 
         }catch(Exception e) {
-            //not finished
+            FxUtils.generateAlert(Alert.AlertType.INFORMATION, "Oh no", "DB error", "Something went wrong on deletion.");
         }finally {
             if(entityManager != null) entityManager.close();
         }

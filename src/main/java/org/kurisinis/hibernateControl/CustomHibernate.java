@@ -55,4 +55,7 @@ public class CustomHibernate extends GenericHibernate{
         return orders;
     }
 
+    public User getEntityById(Class<User> userClass, int id) {
+        return null;
+    }
 }

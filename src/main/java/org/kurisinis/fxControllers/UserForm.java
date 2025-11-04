@@ -7,6 +7,7 @@ import jakarta.persistence.Persistence;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,8 +22,10 @@ import org.kurisinis.hibernateControl.GenericHibernate;
 import org.kurisinis.model.*;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class UserForm {
+public class UserForm implements Initializable {
     @FXML
     public TextField loginField;
     @FXML
@@ -70,18 +73,30 @@ public class UserForm {
         this.userForUpdate = user;
         this.isForUpdate = isForUpdate;
         fillUserDataForUpdate();
-        vehicleTypeField.getItems().addAll(VehicleType.values());//reiktu nukelt kazkur kitur sitas eilutes
-        fillUserDataForUpdate();
-        disableFields();
+    }
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        vehicleTypeField.getItems().addAll(VehicleType.values());
+        disableFields();
     }
 
     private void fillUserDataForUpdate() {
         if (userForUpdate != null) {
+            updateButton.setVisible(true);
             if(userForUpdate instanceof User && isForUpdate) {
                 loginField.setText(userForUpdate.getLogin());
                 passwordField.setText(userForUpdate.getPassword());
-                // add other fields as needed
+                nameField.setText(userForUpdate.getName());
+                surnameField.setText(userForUpdate.getSurname());
+                phoneNumberField.setText(userForUpdate.getPhoneNumber());
+            }else if(userForUpdate instanceof BasicUser && isForUpdate) {
+                loginField.setText(userForUpdate.getLogin());
+                passwordField.setText(userForUpdate.getPassword());
+                nameField.setText(userForUpdate.getName());
+                surnameField.setText(userForUpdate.getSurname());
+                phoneNumberField.setText(userForUpdate.getPhoneNumber());
+               // addressField.setText(userForUpdate.);
             }
         } else {
             updateButton.setVisible(false);

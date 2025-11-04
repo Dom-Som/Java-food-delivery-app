@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 
 public class Restaurant extends BasicUser{
-    @ManyToMany
+    @OneToMany(mappedBy = "restaurant",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cuisine> dishes;
     private String workHours;
     private double rating;

@@ -10,24 +10,30 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kurisinis.fxControllers.MainForm">
    <children>
-      <TabPane fx:id="tabsPane" layoutY="-7.0" prefHeight="513.0" prefWidth="721.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane fx:id="tabsPane" layoutY="-4.0" prefHeight="609.0" prefWidth="938.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab fx:id="userTab" onSelectionChanged="#reloadTableData" text="User management">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="580.0" prefWidth="926.0">
                      <children>
-                        <TableView layoutX="14.0" layoutY="14.0" prefHeight="354.0" prefWidth="693.0">
+                        <TableView fx:id="userTable" layoutX="14.0" layoutY="14.0" prefHeight="354.0" prefWidth="917.0">
                           <columns>
-                            <TableColumn fx:id="IdColl" prefWidth="75.0" text="IdCa" />
-                            <TableColumn fx:id="LoginColl" prefWidth="75.0" text="Login" />
-                              <TableColumn fx:id="PasswordCall" prefWidth="75.0" text="Password" />
-                              <TableColumn fx:id="NameColl" prefWidth="75.0" text="Name" />
-                              <TableColumn fx:id="SurnameColl" prefWidth="75.0" text="Surname" />
-                              <TableColumn fx:id="DummyColl" prefWidth="75.0" text="Action" />
-                              <TableColumn fx:id="OrderHistoryColl" prefWidth="75.0" text="Order history" />
+                            <TableColumn fx:id="idCol" prefWidth="75.0" text="Id" />
+                              <TableColumn fx:id="userTypeCol" prefWidth="75.0" text="User type" />
+                            <TableColumn fx:id="loginCol" prefWidth="75.0" text="Login" />
+                              <TableColumn fx:id="passwordCol" prefWidth="75.0" text="Password" />
+                              <TableColumn fx:id="nameCol" prefWidth="75.0" text="Name" />
+                              <TableColumn fx:id="surnameCol" prefWidth="75.0" text="Surname" />
+                              <TableColumn fx:id="phoneCol" prefWidth="88.66659545898438" text="Phone number" />
+                              <TableColumn fx:id="addressCol" prefWidth="62.0" text="Address" />
+                              <TableColumn fx:id="workHoursCol" prefWidth="62.0" text="Work hours" />
+                              <TableColumn fx:id="licenseCol" prefWidth="62.0" text="License" />
+                              <TableColumn fx:id="bdateCol" prefWidth="62.0" text="Birthday" />
+                              <TableColumn fx:id="vehicleCol" prefWidth="62.0" text="Vechicle type" />
+                              <TableColumn fx:id="dummyCol" prefWidth="62.0" text="Action" />
                           </columns>
                         </TableView>
-                        <Button layoutX="309.0" layoutY="420.0" mnemonicParsing="false" text="Create new User" />
+                        <Button layoutX="86.0" layoutY="471.0" mnemonicParsing="false" onAction="#addUser" text="Create new User" />
                      </children>
                   </AnchorPane>
             </content>
@@ -54,10 +60,10 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Button layoutX="104.0" layoutY="298.0" mnemonicParsing="false" onAction="#addUser" text="Create new User" />
-                        <ListView fx:id="userListField" layoutX="17.0" layoutY="42.0" prefHeight="228.0" prefWidth="687.0" />
-                        <Button layoutX="286.0" layoutY="298.0" mnemonicParsing="false" onAction="#loadUser" text="Update user" />
-                        <Button layoutX="475.0" layoutY="298.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete user" />
+                        <Button layoutX="121.0" layoutY="486.0" mnemonicParsing="false" onAction="#addUser" text="Create new User" />
+                        <ListView fx:id="userListField" layoutX="17.0" layoutY="42.0" prefHeight="228.0" prefWidth="831.0" />
+                        <Button layoutX="372.0" layoutY="486.0" mnemonicParsing="false" onAction="#loadUser" text="Update user" />
+                        <Button layoutX="622.0" layoutY="486.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete user" />
                      </children>
                   </AnchorPane>
                </content>

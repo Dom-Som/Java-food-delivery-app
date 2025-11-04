@@ -19,6 +19,8 @@ public class Cuisine {
     protected int id;
     @ManyToMany(mappedBy = "items", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FoodOrder> orders;
+    @ManyToOne
+    private Restaurant restaurant;
     @Enumerated(EnumType.STRING)
     protected Ingredients ingredients;
     @Enumerated(EnumType.STRING)

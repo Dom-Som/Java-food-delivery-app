@@ -23,7 +23,7 @@ public class Chat {
     private BasicUser customer;
     @ManyToOne
     private Driver driver;
-    @OneToOne
+    @OneToOne(mappedBy ="chat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     protected FoodOrder order;
     @OneToMany(mappedBy = "chat",  cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
     private List<ChatMessage> messages;

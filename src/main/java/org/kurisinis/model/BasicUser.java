@@ -10,9 +10,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-//import static jakarta.persistence.FetchType.LAZY;
-
-
 @Getter
 @Setter
 @AllArgsConstructor

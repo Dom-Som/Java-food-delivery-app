@@ -35,6 +35,15 @@ public class User implements Serializable {
         this.isAdmin = isAdmin;
     }
 
+    public User(String login, String password, String name, String surname, String phoneNumber) {
+        this.login = login;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+        this.phoneNumber = phoneNumber;
+        //this.isAdmin = isAdmin;
+    }
+
     public User(String login, String password) {
         this.login = login;
         this.password = password;
