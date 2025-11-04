@@ -82,21 +82,47 @@ public class UserForm implements Initializable {
     }
 
     private void fillUserDataForUpdate() {
-        if (userForUpdate != null) {
+        if (userForUpdate != null && isForUpdate) {
             updateButton.setVisible(true);
-            if(userForUpdate instanceof User && isForUpdate) {
+             if (userForUpdate instanceof Restaurant && isForUpdate) {
+                restaurantRadio.setSelected(true);
+                disableFields();
+                loginField.setText(userForUpdate.getLogin());
+                passwordField.setText(userForUpdate.getPassword());
+                nameField.setText(userForUpdate.getName());
+                surnameField.setText(userForUpdate.getSurname());
+                phoneNumberField.setText(userForUpdate.getPhoneNumber());
+                addressField.setText(((Restaurant)userForUpdate).getAddress());
+                workingHoursField.setText(((Restaurant)userForUpdate).getWorkHours());
+            }else if(userForUpdate instanceof Driver && isForUpdate) {
+                driverRadio.setSelected(true);
+                disableFields();
+                loginField.setText(userForUpdate.getLogin());
+                passwordField.setText(userForUpdate.getPassword());
+                nameField.setText(userForUpdate.getName());
+                surnameField.setText(userForUpdate.getSurname());
+                phoneNumberField.setText(userForUpdate.getPhoneNumber());
+                addressField.setText(((Driver)userForUpdate).getAddress());
+                licenseField.setText(((Driver)userForUpdate).getLicence());
+                bdateField.setValue(((Driver)userForUpdate).getBDate());
+                vehicleTypeField.setValue(((Driver)userForUpdate).getVehicleType());
+            }else if(userForUpdate instanceof User && isForUpdate) {
+                userRadio.setSelected(true);
+                disableFields();
                 loginField.setText(userForUpdate.getLogin());
                 passwordField.setText(userForUpdate.getPassword());
                 nameField.setText(userForUpdate.getName());
                 surnameField.setText(userForUpdate.getSurname());
                 phoneNumberField.setText(userForUpdate.getPhoneNumber());
             }else if(userForUpdate instanceof BasicUser && isForUpdate) {
+                clientRadio.setSelected(true);
+                disableFields();
                 loginField.setText(userForUpdate.getLogin());
                 passwordField.setText(userForUpdate.getPassword());
                 nameField.setText(userForUpdate.getName());
                 surnameField.setText(userForUpdate.getSurname());
                 phoneNumberField.setText(userForUpdate.getPhoneNumber());
-               // addressField.setText(userForUpdate.);
+                addressField.setText(((BasicUser)userForUpdate).getAddress());
             }
         } else {
             updateButton.setVisible(false);

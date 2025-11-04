@@ -6,6 +6,8 @@ import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import javafx.scene.control.Alert;
+import org.kurisinis.consoleCourseWork.utils.FxUtils;
 import org.kurisinis.model.FoodOrder;
 import org.kurisinis.model.Restaurant;
 import org.kurisinis.model.User;
@@ -55,7 +57,18 @@ public class CustomHibernate extends GenericHibernate{
         return orders;
     }
 
-    public User getEntityById(Class<User> userClass, int id) {
-        return null;
+    public <T> T getEntityById(Class<T> entityClass, int id){
+        T entity = null;
+        try{
+            entityManager = entityManagerFactory.createEntityManager();
+            entityManager.getTransaction().begin();
+            entity = entityManager.find(entityClass, id);
+            entityManager.getTransaction().commit();
+        }catch(Exception e){
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Waring!", "Something went wrong during search for specific element", "Could not get item ID");
+        }finally{
+            if(entityManager!=null)entityManager.close();
+        }
+        return entity;
     }
 }

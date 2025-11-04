@@ -28,4 +28,8 @@ public class Restaurant extends BasicUser{
         this.workHours = workHours;
     }
 
+    public Restaurant(String login, String password, String name, String surname, String phoneNumber, String address, String workHours) {
+        super(login, password, name, surname, phoneNumber, address);
+        this.workHours = workHours;
+    }
 }

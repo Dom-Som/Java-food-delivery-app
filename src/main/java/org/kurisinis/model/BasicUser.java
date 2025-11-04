@@ -34,4 +34,9 @@ public class BasicUser extends User{
         this.myReviews = new ArrayList<>();
         this.feedback = new ArrayList<>();
     }
+
+    public BasicUser(String login, String password, String name, String surname, String phoneNumber, String address) {
+        super(login, password, name, surname, phoneNumber);
+        this.address = address;
+    }
 }

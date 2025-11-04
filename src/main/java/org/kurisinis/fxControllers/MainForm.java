@@ -23,6 +23,7 @@ import org.kurisinis.model.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +81,7 @@ public class MainForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //<editor-fold desc="User management table initialize">
         userTable.setEditable(true);
         userTable.setItems(userObservableList);//
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -95,28 +97,74 @@ public class MainForm implements Initializable {
         });
 
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameCol.setOnEditCommit(event -> {
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setName(event.getNewValue());
+            User user = customHibernate.getEntityById(User.class, event.getTableView().getItems().get(event.getTablePosition().getRow()).getId());
+            user.setName(event.getNewValue());
+            customHibernate.update(user);
+        });
         surnameCol.setCellValueFactory(new PropertyValueFactory<>("surname"));
+        surnameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        surnameCol.setOnEditCommit(event -> {
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setSurname(event.getNewValue());
+            User user = customHibernate.getEntityById(User.class, event.getTableView().getItems().get(event.getTablePosition().getRow()).getId());
+            user.setSurname(event.getNewValue());
+            customHibernate.update(user);
+        });
         phoneCol.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+        phoneCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        phoneCol.setOnEditCommit(event -> {
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setPhoneNumber(event.getNewValue());
+            User user = customHibernate.getEntityById(User.class, event.getTableView().getItems().get(event.getTablePosition().getRow()).getId());
+            user.setPhoneNumber(event.getNewValue());
+            customHibernate.update(user);
+        });
        addressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        addressCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        addressCol.setOnEditCommit(event -> {
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setAddress(event.getNewValue());
+            BasicUser user = customHibernate.getEntityById(BasicUser.class, event.getTableView().getItems().get(event.getTablePosition().getRow()).getId());
+            user.setAddress(event.getNewValue());
+            customHibernate.update(user);
+        });
         workHoursCol.setCellValueFactory(new PropertyValueFactory<>("workHours"));
+        workHoursCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        workHoursCol.setOnEditCommit(event -> {
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setWorkHours(event.getNewValue());
+            Restaurant user = customHibernate.getEntityById(Restaurant.class, event.getTableView().getItems().get(event.getTablePosition().getRow()).getId());
+            user.setWorkHours(event.getNewValue());
+            customHibernate.update(user);
+        });
         licenseCol.setCellValueFactory(new PropertyValueFactory<>("license"));
+        licenseCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        licenseCol.setOnEditCommit(event -> {
+            event.getTableView().getItems().get(event.getTablePosition().getRow()).setLicense(event.getNewValue());
+            Driver user = customHibernate.getEntityById(Driver.class, event.getTableView().getItems().get(event.getTablePosition().getRow()).getId());
+            user.setLicence(event.getNewValue());
+            customHibernate.update(user);
+        });
         bdateCol.setCellValueFactory(new PropertyValueFactory<>("bdate"));
         vehicleCol.setCellValueFactory(new PropertyValueFactory<>("vehicleType"));
+        //</editor-fold>
     }
 
     public void setData(EntityManagerFactory entityManagerFactory, User user) {
         this.entityManagerFactory = entityManagerFactory;
         this.currentUser = user;
         this.customHibernate = new CustomHibernate(entityManagerFactory);
+
+        reloadTableData();
         setUserFormVisibility();
     }
 
     private void setUserFormVisibility() {
-        if(currentUser instanceof User) {
-            //
-        } else if (currentUser instanceof Restaurant) {
+    if (currentUser instanceof Restaurant || currentUser instanceof BasicUser || currentUser instanceof Driver) {
             tabsPane.getTabs().remove(altTab);
-        }
+            tabsPane.getTabs().remove(userTab);
+        }else{
+        tabsPane.getTabs().remove(altTab);
+    }
     }
 
     public void reloadTableData() {
@@ -137,7 +185,7 @@ public class MainForm implements Initializable {
                     userTableParameters.setAddress(((BasicUser) u).getAddress());
                 }
                 if(u instanceof Restaurant) {
-                   // userTableParameters.setWorkHours(((Restaurant) u).getWorkHours());
+                    userTableParameters.setWorkHours(((Restaurant) u).getWorkHours());
                 }
                 if(u instanceof Driver) {
                     userTableParameters.setLicense(((Driver) u).getLicence());
@@ -178,10 +226,11 @@ public class MainForm implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
 
-        User selectedUser = userListField.getSelectionModel().getSelectedItem();
+        // User selectedUser = userListField.getSelectionModel().getSelectedItem();
 
         UserForm userForm = fxmlLoader.getController();
-        userForm.setData(entityManagerFactory, selectedUser, true);
+        UserTableParameters selectedUser = userTable.getSelectionModel().getSelectedItem();
+        userForm.setData(entityManagerFactory, convertUserTableParamsToUserClass(selectedUser), true);
 
         Stage stage = new Stage();
         Scene scene = new Scene(parent);
@@ -191,11 +240,24 @@ public class MainForm implements Initializable {
         stage.showAndWait();
     }
 
+    private User convertUserTableParamsToUserClass(UserTableParameters selectedUser) {
+        if(selectedUser.getUserType().equals("Driver")) {
+            //return new Driver;
+            return null;
+        } else if (selectedUser.getUserType().equals("Restaurant")) {
+            return new Restaurant(selectedUser.getLogin(), selectedUser.getPassword(), selectedUser.getName(), selectedUser.getSurname(), selectedUser.getPhoneNumber(), selectedUser.getAddress(), selectedUser.getWorkHours());
+        } else if(selectedUser.getUserType().equals("BasicUser")) {
+            return new BasicUser(selectedUser.getLogin(), selectedUser.getPassword(), selectedUser.getName(), selectedUser.getSurname(), selectedUser.getPhoneNumber(), selectedUser.getAddress());
+        } else {
+            return new User(selectedUser.getLogin(), selectedUser.getPassword(), selectedUser.getName(), selectedUser.getSurname(), selectedUser.getPhoneNumber());
+        }
+    }
+
     public void addUser(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
 
-        User selectedUser = userListField.getSelectionModel().getSelectedItem();
+      //  User selectedUser = userListField.getSelectionModel().getSelectedItem();
 
         UserForm userForm = fxmlLoader.getController();
         userForm.setData(entityManagerFactory, null, false);

@@ -34,6 +34,8 @@
                           </columns>
                         </TableView>
                         <Button layoutX="86.0" layoutY="471.0" mnemonicParsing="false" onAction="#addUser" text="Create new User" />
+                        <Button layoutX="389.0" layoutY="471.0" mnemonicParsing="false" onAction="#loadUser" text="Update" />
+                        <Button layoutX="580.0" layoutY="471.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete" />
                      </children>
                   </AnchorPane>
             </content>
