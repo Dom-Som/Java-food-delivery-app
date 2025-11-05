@@ -5,11 +5,10 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane prefHeight="224.0" prefWidth="302.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kurisinis.fxControllers.LoginForm">
    <children>
-      <TextField fx:id="loginField" layoutX="65.0" layoutY="33.0" />
-      <PasswordField fx:id="passwordField" layoutX="65.0" layoutY="90.0" />
+      <TextField fx:id="loginField" layoutX="65.0" layoutY="33.0" promptText="Username" />
+      <PasswordField fx:id="passwordField" layoutX="65.0" layoutY="90.0" promptText="Password" />
       <Button layoutX="65.0" layoutY="168.0" mnemonicParsing="false" onAction="#validateAndLoad" text="Login" />
       <Button layoutX="154.0" layoutY="168.0" mnemonicParsing="false" onAction="#registerNewUser" text="Register" />
    </children>

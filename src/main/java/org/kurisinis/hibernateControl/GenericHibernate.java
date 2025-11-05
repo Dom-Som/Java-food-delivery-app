@@ -40,7 +40,7 @@ public class GenericHibernate {
             entityManager.merge(entity);
             entityManager.getTransaction().commit();
         }catch(Exception e) {
-            FxUtils.generateAlert(Alert.AlertType.ERROR, "DB erro", "Update failed", "Entity not found in DB.");
+            FxUtils.generateAlert(Alert.AlertType.ERROR, "DB error", "Update failed", "Entity not found in DB.");
 
         }finally {
             if(entityManager != null) entityManager.close();
@@ -73,19 +73,12 @@ public class GenericHibernate {
             list = q.getResultList();
 
         }catch(Exception e) {
-            FxUtils.generateAlert(Alert.AlertType.INFORMATION, "Oh no", "DB error", "Something went wrong on deletion.");
+
         }finally {
             if(entityManager != null) entityManager.close();
         }
         return list;
     }
-    public <T> T getEntityById(Class<T> entityClass, int id) {
-        EntityManager em = entityManagerFactory.createEntityManager();
-        try {
-            return em.find(entityClass, id);
-        } finally {
-            em.close();
-        }
-    }
+
 
 }

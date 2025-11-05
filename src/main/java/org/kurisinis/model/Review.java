@@ -14,5 +14,5 @@ public class Review extends ChatMessage{
     private Restaurant restaurant;
     @OneToOne
     private FoodOrder foodOrder;
-    protected String text;
+    private String text;
 }

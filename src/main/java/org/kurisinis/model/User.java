@@ -50,6 +50,6 @@ public class User implements Serializable {
     }
 
     @Override
-    public String toString() { return "Name: " + name + " Surname: " + surname + " Phone number: " + phoneNumber; }
+    public String toString() { return name; }
 
 }

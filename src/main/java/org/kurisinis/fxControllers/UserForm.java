@@ -111,7 +111,16 @@ public class UserForm implements Initializable {
                 licenseField.setText(((Driver)userForUpdate).getLicence());
                 bdateField.setValue(((Driver)userForUpdate).getBDate());
                 vehicleTypeField.setValue(((Driver)userForUpdate).getVehicleType());
-            }else if(userForUpdate instanceof User && isForUpdate) {
+            }else if(userForUpdate instanceof BasicUser && isForUpdate) {
+                 clientRadio.setSelected(true);
+                 disableFields();
+                 loginField.setText(userForUpdate.getLogin());
+                 passwordField.setText(userForUpdate.getPassword());
+                 nameField.setText(userForUpdate.getName());
+                 surnameField.setText(userForUpdate.getSurname());
+                 phoneNumberField.setText(userForUpdate.getPhoneNumber());
+                 addressField.setText(((BasicUser)userForUpdate).getAddress());
+             }else if(userForUpdate instanceof User && isForUpdate) {
                 userRadio.setSelected(true);
                 disableFields();
                 loginField.setText(userForUpdate.getLogin());
@@ -119,15 +128,6 @@ public class UserForm implements Initializable {
                 nameField.setText(userForUpdate.getName());
                 surnameField.setText(userForUpdate.getSurname());
                 phoneNumberField.setText(userForUpdate.getPhoneNumber());
-            }else if(userForUpdate instanceof BasicUser && isForUpdate) {
-                clientRadio.setSelected(true);
-                disableFields();
-                loginField.setText(userForUpdate.getLogin());
-                passwordField.setText(userForUpdate.getPassword());
-                nameField.setText(userForUpdate.getName());
-                surnameField.setText(userForUpdate.getSurname());
-                phoneNumberField.setText(userForUpdate.getPhoneNumber());
-                addressField.setText(((BasicUser)userForUpdate).getAddress());
             }
         } else {
             updateButton.setVisible(false);

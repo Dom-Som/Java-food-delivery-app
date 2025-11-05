@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,10 +16,12 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 
-public class FoodOrder {
+public class FoodOrder implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected int id;
+    private int id;
+    private String name;
+    private double price;
     @ManyToOne
     private BasicUser customer;
     @ManyToOne
@@ -25,9 +29,40 @@ public class FoodOrder {
     @ManyToOne
     private Restaurant restaurant;
     @ManyToMany
-    protected List<Cuisine> items;
-    protected double price;
+    private List<Cuisine> items;
     @OneToOne
     private Chat chat;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+    private LocalDateTime dateCreated;
+    private LocalDateTime dateUpdated;
 
+    public FoodOrder (String name, double price, BasicUser customer, Restaurant restaurant) {
+        this.name = name;
+        this.price = price;
+        this.customer = customer;
+        this.restaurant = restaurant;
+    }
+
+    public FoodOrder(String name, double price, BasicUser customer, Restaurant restaurant, OrderStatus orderStatus) {
+        this.name = name;
+        this.price = price;
+        this.customer = customer;
+        this.restaurant = restaurant;
+        this.orderStatus = orderStatus;
+    }
+
+    public FoodOrder(String name, double price, BasicUser customer, List<Cuisine> items, Restaurant restaurant) {
+        this.name = name;
+        this.price = price;
+        this.customer = customer;
+        this.items = items;
+        this.restaurant = restaurant;
+        this.orderStatus = OrderStatus.PENDING;
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + price + " " + customer + " " + restaurant + " " + orderStatus;
+    }
 }

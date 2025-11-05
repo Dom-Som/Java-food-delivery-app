@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kurisinis.HelloApplication;
@@ -31,18 +32,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainForm implements Initializable {
-    @FXML
-    public Tab managementTab;
-    @FXML
-    public Tab foodTab;
     @FXML //laikinas
     public Tab altTab;
     @FXML
     public ListView<User> userListField;
     @FXML
     public TabPane tabsPane;
-    @FXML
-    public Button updateButton;
     //<editor-fold desc="User tab elements">
     @FXML
     public Tab userTab;
@@ -75,6 +70,59 @@ public class MainForm implements Initializable {
     @FXML
     public TableColumn dummyCol;
     //</editor-fold>
+
+    //<editor-fold desc="Order tab elements">
+    @FXML
+    public Tab foodOrderTab;
+    @FXML
+    public ListView<FoodOrder> orderList;
+    @FXML
+    public ComboBox<BasicUser> clientList;
+    @FXML
+    public TextField titleField;
+    @FXML
+    public TextField priceField;
+    @FXML
+    public ComboBox<Restaurant> restaurantField;
+    @FXML
+    public ComboBox<OrderStatus> orderStatusField;
+    @FXML
+    public ComboBox<OrderStatus> filterStatus;
+    @FXML
+    public ComboBox<BasicUser> filterClients;
+    @FXML
+    public DatePicker filterFrom;
+    @FXML
+    public DatePicker filterTo;
+    @FXML
+    public ListView<Cuisine> foodList;
+
+    //</editor-fold>
+
+    //<editor-fold desc="Cuisine tab elements">
+    @FXML
+    public Tab foodTab;
+    @FXML
+    public ListView<Cuisine> cuisineList;
+    @FXML
+    public TextField titleCuisineField;
+    @FXML
+    public ListView<Restaurant> restaurantList;
+    @FXML
+    public TextArea ingredientsField;
+    @FXML
+    public TextField cuisinePriceField;
+    @FXML
+    public CheckBox isSpicy;
+    @FXML
+    public CheckBox isVegan;
+    @FXML
+    public ComboBox<Allergens> allergenList;
+    @FXML
+    public ComboBox<PortionSize> portionSizeList;
+    //</editor-fold>
+
+
     private ObservableList<UserTableParameters> userObservableList = FXCollections.observableArrayList();
     private EntityManagerFactory entityManagerFactory;
     private CustomHibernate customHibernate;
@@ -168,6 +216,7 @@ public class MainForm implements Initializable {
     }
     }
 
+
     public void reloadTableData() {
         if(userTab.isSelected()) {
             List<User> users = customHibernate.getAllRecords(User.class);
@@ -200,34 +249,64 @@ public class MainForm implements Initializable {
         } else if (altTab.isSelected()) {
             List<User> userList = customHibernate.getAllRecords(User.class);
             userListField.getItems().addAll(userList);
-        } else if (foodTab.isSelected()) {
+        } else if(foodOrderTab.isSelected()) {
+            clearAllOrderFields();
+            List<FoodOrder> foodOrders = getFoodOrders();
+            orderList.getItems().addAll(foodOrders);
+            //double check codel rodo per daug varototju
+            clientList.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
+            restaurantField.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
+            orderStatusField.getItems().addAll(OrderStatus.values());
+            cuisineList.getItems().addAll(customHibernate.getAllRecords(Cuisine.class));
+        }else if (foodTab.isSelected()) {
+            clearAllCuisineFields();
+            portionSizeList.getItems().addAll(customHibernate.getAllRecords(PortionSize.class));
+            allergenList.getItems().addAll(customHibernate.getAllRecords(Allergens.class));
+            restaurantList.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
 
-        }else if(managementTab.isSelected()) {
-            List<FoodOrder> foodList = getFoodOrders();
         }
     }
 
-
-    private List<FoodOrder> getFoodOrders() {
-        if(currentUser instanceof Restaurant) {
-            return customHibernate.getRestaurantOrders((Restaurant) currentUser);
-        }else{
-            return customHibernate.getAllRecords(FoodOrder.class);
-        }
-
-    }
-    public void openUserForm() throws IOException {
-
+    private void clearAllOrderFields(){
+        orderList.getItems().clear();
+        clientList.getItems().clear();
+        restaurantField.getItems().clear();
+        titleField.clear();
+        priceField.clear();
+        orderStatusField.getItems().clear();
     }
 
+    private void clearAllCuisineFields(){
+        cuisineList.getItems().clear();
+        cuisinePriceField.clear();
+        titleCuisineField.clear();
+        ingredientsField.clear();
+        portionSizeList.getItems().clear();
+        allergenList.getItems().clear();
+        isVegan.setSelected(false);
+        isSpicy.setSelected(false);
+        restaurantList.getItems().clear();
+
+    }
+
+    //<editor-fold desc="User tab functionality">
     public void loadUser(ActionEvent actionEvent) throws IOException{
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
-        UserTableParameters selectedUserParams = userTable.getSelectionModel().getSelectedItem();
-        User selectedUser = customHibernate.getEntityById(User.class, selectedUserParams.getId());
+        try{
+            UserTableParameters selectedUserParams = userTable.getSelectionModel().getSelectedItem();
+            if (selectedUserParams == null) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "No user selected!", "Please make sure you have selected the user you want to delete");
+                return;
+            }
+            User selectedUser = customHibernate.getEntityById(User.class, selectedUserParams.getId());
 
-        UserForm userForm = fxmlLoader.getController();
-        userForm.setData(entityManagerFactory, selectedUser, true);
+            UserForm userForm = fxmlLoader.getController();
+            userForm.setData(entityManagerFactory, selectedUser, true);
+        }catch(Exception e){
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Update error!", "An unexpected error occurred",e.getMessage());
+        }
+
 
         Stage stage = new Stage();
         Scene scene = new Scene(parent);
@@ -257,6 +336,10 @@ public class MainForm implements Initializable {
     public void deleteUser() {
         try{
             UserTableParameters selectedParams = userTable.getSelectionModel().getSelectedItem();
+            if (selectedParams == null) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "No user selected!", "Please make sure you have selected the user you want to delete");
+                return;
+            }
             boolean confirmed = FxUtils.confirmationWindow("Confirm Deletion", "Are you sure you want to delete this user?", "This action cannot be undone!");
 
             if (confirmed) {
@@ -265,7 +348,127 @@ public class MainForm implements Initializable {
                 reloadTableData();
             }
         }catch(Exception e){
-            FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "You have no user selected for deletion!","Please make sure you have selected the user you want to delete");
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "An unexpected error occurred",e.getMessage());
         }
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Food order tab functionality">
+    private List<FoodOrder> getFoodOrders() {
+        if(currentUser instanceof Restaurant) {
+            return customHibernate.getRestaurantOrders((Restaurant) currentUser);
+        }else{
+            return customHibernate.getAllRecords(FoodOrder.class);
+        }
+
+    }
+
+    public static boolean isNumeric(String str) {
+        try{
+            Double.parseDouble(str);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+    public void deleteOrder() {
+        FoodOrder selectedOrder = orderList.getSelectionModel().getSelectedItem();
+        if (selectedOrder == null) {
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "No food order selected!", "Please make sure you have selected the food order you want to delete");
+            return;
+        }
+
+        boolean confirmed = FxUtils.confirmationWindow("Confirm Deletion", "Are you sure you want to delete this user?", "This action cannot be undone!");
+
+        if (confirmed) {
+            customHibernate.delete(FoodOrder.class, selectedOrder.getId());
+            orderList.getItems().clear();
+            orderList.getItems().addAll(customHibernate.getAllRecords(FoodOrder.class));
+        }
+    }
+
+    public void createOrder(ActionEvent actionEvent) {
+        if(isNumeric(priceField.getText())) {
+            FoodOrder foodOrder = new FoodOrder(titleField.getText(), Double.parseDouble(priceField.getText()), clientList.getValue(),foodList.getSelectionModel().getSelectedItems(), restaurantField.getValue());
+            customHibernate.create(foodOrder);
+
+
+            orderList.getItems().clear();
+            orderList.getItems().addAll(customHibernate.getAllRecords(FoodOrder.class));
+        }else{
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Oh no!", "Wrong price format!", "Please enter a valid price!");
+        }
+
+    }
+
+    public void updateOrder() {
+        FoodOrder foodOrder = orderList.getSelectionModel().getSelectedItem();
+        if (foodOrder == null) {
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Update error!", "No food order selected!", "Please make sure you have selected the food order you want to update");
+            return;
+        }
+        foodOrder.setRestaurant(restaurantField.getSelectionModel().getSelectedItem());
+        foodOrder.setName(titleField.getText());
+        foodOrder.setPrice(Double.parseDouble(priceField.getText()));
+        foodOrder.setOrderStatus(orderStatusField.getValue());
+        foodOrder.setCustomer(clientList.getSelectionModel().getSelectedItem());
+
+        customHibernate.update(foodOrder);
+        orderList.getItems().clear();
+        orderList.getItems().addAll(customHibernate.getAllRecords(FoodOrder.class));
+    }
+
+    public void loadOrderInfo() {
+        FoodOrder selectedFoodOrder = orderList.getSelectionModel().getSelectedItem();
+        clientList.getItems().stream()
+                .filter(c -> c.getId() == selectedFoodOrder.getCustomer().getId())
+                .findFirst()
+                .ifPresent(u->clientList.getSelectionModel().select(u));
+        titleField.setText(selectedFoodOrder.getName());
+        priceField.setText(String.valueOf(selectedFoodOrder.getPrice()));
+        restaurantField.getItems().stream()
+                .filter(c -> c.getId() == selectedFoodOrder.getRestaurant().getId())
+                .findFirst()
+                .ifPresent(u->restaurantField.getSelectionModel().select(u));
+        orderList.getItems().stream()
+                .filter(c -> c.getId() == selectedFoodOrder.getId())
+                .findFirst()
+                .ifPresent(u->orderStatusField.getSelectionModel().select(u.getOrderStatus()));
+        //field enable/disable
+    }
+    private void disableFoodOrderFields(){
+        if(orderStatusField.getSelectionModel().getSelectedItem() == OrderStatus.COMPLETED){
+            clientList.setDisable(true);
+            priceField.setDisable(true);
+        }
+    }
+
+    public void filterOrders(ActionEvent actionEvent) {
+    }
+
+
+    //</editor-fold>
+
+    //<editor-fold desc="Cuisine tab functionality">
+    public void createNewMenuItem() {
+        Cuisine cuisine = new Cuisine(titleCuisineField.getText(),restaurantField.getSelectionModel().getSelectedItem(), ingredientsField.getText(), allergenList.getValue(), portionSizeList.getValue(), Double.parseDouble(cuisinePriceField.getText()), isSpicy.isSelected(), isVegan.isSelected());
+        customHibernate.create(cuisine);
+
+        cuisineList.getItems().clear();
+        cuisineList.getItems().addAll(customHibernate.getAllRecords(Cuisine.class));
+    }
+
+    public void updateMenuItem(ActionEvent actionEvent) {
+    }
+
+    public void deleteMenuItem(ActionEvent actionEvent) {
+    }
+
+    public void loadRestaurantMenu() {
+        cuisineList.getItems().addAll(customHibernate.getRestaurantCuisine(restaurantList.getSelectionModel().getSelectedItem()));
+    }
+    //</editor-fold>
+
+
 }

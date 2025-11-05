@@ -19,12 +19,13 @@ public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String name;
     @ManyToOne
     private BasicUser customer;
     @ManyToOne
     private Driver driver;
     @OneToOne(mappedBy ="chat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    protected FoodOrder order;
+    private FoodOrder order;
     @OneToMany(mappedBy = "chat",  cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
     private List<ChatMessage> messages;
     private LocalDateTime createdAt;
