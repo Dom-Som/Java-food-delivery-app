@@ -59,6 +59,8 @@ public class FoodOrder implements Serializable {
         this.items = items;
         this.restaurant = restaurant;
         this.orderStatus = OrderStatus.PENDING;
+        this.dateCreated = LocalDateTime.now();
+        this.dateUpdated = LocalDateTime.now();
     }
 
     @Override

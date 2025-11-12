@@ -55,7 +55,7 @@ public class GenericHibernate {
             entityManager.remove(entity);
             entityManager.getTransaction().commit();
         }catch(Exception e) {
-            FxUtils.generateAlert(Alert.AlertType.ERROR, "DB error", "Deletion failed", "idk");
+            FxUtils.generateAlert(Alert.AlertType.ERROR, "DB error", "Deletion failed", e.getMessage());
 
         }finally {
             if(entityManager != null) entityManager.close();

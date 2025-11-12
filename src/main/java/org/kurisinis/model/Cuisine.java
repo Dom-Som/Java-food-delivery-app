@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,8 +25,9 @@ public class Cuisine implements Serializable {
     @ManyToOne
     private Restaurant restaurant;
     private String ingredients;
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Allergens allergens;
+    private List<Allergens> allergens = new ArrayList<>();
     @Enumerated(EnumType.STRING)
     private PortionSize portionSize;
     private double price;
@@ -34,7 +36,7 @@ public class Cuisine implements Serializable {
 
 
 
-    public Cuisine(String name, Restaurant restaurant, String ingredients, Allergens allergens, PortionSize portionSize, double price, boolean spicy, boolean vegan) {
+    public Cuisine(String name, Restaurant restaurant, String ingredients, List<Allergens> allergens, PortionSize portionSize, double price, boolean spicy, boolean vegan) {
         this.name = name;
         this.restaurant = restaurant;
         this.ingredients = ingredients;
@@ -47,14 +49,9 @@ public class Cuisine implements Serializable {
 
     @Override
     public String toString() {
-        return "Cuisine{" +
-                "id=" + id +
+        return "name=" + name +
                 ", ingredients='" + ingredients + '\'' +
-                ", allergens=" + allergens +
-                ", portionSize=" + portionSize +
                 ", price=" + price +
-                ", restaurant=" + (restaurant != null ? restaurant.getName() : "null") +
-                //", orders=" + (orders != null ? orders.size() + " orders" : "none") +
-                '}';
+                ", restaurant=" + (restaurant) ;
     }
 }

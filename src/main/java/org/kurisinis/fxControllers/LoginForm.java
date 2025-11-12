@@ -49,7 +49,8 @@ public class LoginForm {
     public void validateAndLoad(ActionEvent event) throws IOException {
         CustomHibernate customHibernate = new CustomHibernate(entityManagerFactory);
         User user = customHibernate.getUserByCredentials(loginField.getText(), passwordField.getText());
-            FXMLLoader fxmlLoader = new FXMLLoader (HelloApplication.class.getResource("/org/example/kurisinis/main-form.fxml"));
+        if(user != null){
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/main-form.fxml"));
             Parent parent = fxmlLoader.load();
 
             MainForm mainForm = fxmlLoader.getController();
@@ -62,6 +63,7 @@ public class LoginForm {
             stage.show();
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             currentStage.close();
+        }
 
     }
 

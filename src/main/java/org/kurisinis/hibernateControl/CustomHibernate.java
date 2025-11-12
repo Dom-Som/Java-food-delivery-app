@@ -35,6 +35,8 @@ public class CustomHibernate extends GenericHibernate{
             user = (User) q.getSingleResult();
         }catch(Exception e){
             FxUtils.generateAlert(Alert.AlertType.INFORMATION, "Oh no", "User Login Failed", "No such user or wrong credentials!");
+        }finally{
+            if(entityManager!=null)entityManager.close();
         }
         return user;
     }
@@ -109,5 +111,14 @@ public class CustomHibernate extends GenericHibernate{
             FxUtils.generateAlert(Alert.AlertType.WARNING, "Waring!", "Something went wrong during search for specific restaurant", e.getMessage());
         }
         return menu;
+    }
+    public List<BasicUser> getOnlyBasicUsers(){
+        List<BasicUser> basicUsers = new ArrayList<>();
+        for(BasicUser user : getAllRecords(BasicUser.class)){
+            if(!(user instanceof Restaurant) && !(user instanceof Driver)){
+                basicUsers.add(user);
+            }
+        }
+        return basicUsers;
     }
 }

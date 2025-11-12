@@ -1,18 +1,18 @@
 package org.kurisinis.fxControllers;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
@@ -25,11 +25,11 @@ import org.kurisinis.model.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static java.time.LocalTime.now;
 
 public class MainForm implements Initializable {
     @FXML //laikinas
@@ -117,7 +117,7 @@ public class MainForm implements Initializable {
     @FXML
     public CheckBox isVegan;
     @FXML
-    public ComboBox<Allergens> allergenList;
+    public ListView<Allergens> allergenList;
     @FXML
     public ComboBox<PortionSize> portionSizeList;
     //</editor-fold>
@@ -196,6 +196,11 @@ public class MainForm implements Initializable {
         bdateCol.setCellValueFactory(new PropertyValueFactory<>("bdate"));
         vehicleCol.setCellValueFactory(new PropertyValueFactory<>("vehicleType"));
         //</editor-fold>
+
+
+        allergenList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        allergenList.getItems().addAll(Allergens.values());
+
     }
 
     public void setData(EntityManagerFactory entityManagerFactory, User user) {
@@ -253,15 +258,18 @@ public class MainForm implements Initializable {
             clearAllOrderFields();
             List<FoodOrder> foodOrders = getFoodOrders();
             orderList.getItems().addAll(foodOrders);
-            //double check codel rodo per daug varototju
-            clientList.getItems().addAll(customHibernate.getAllRecords(BasicUser.class));
+            clientList.getItems().addAll(customHibernate.getOnlyBasicUsers());
             restaurantField.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
             orderStatusField.getItems().addAll(OrderStatus.values());
             cuisineList.getItems().addAll(customHibernate.getAllRecords(Cuisine.class));
+            filterStatus.getItems().addAll(OrderStatus.values());
+            filterClients.getItems().addAll(customHibernate.getOnlyBasicUsers());
         }else if (foodTab.isSelected()) {
             clearAllCuisineFields();
-            portionSizeList.getItems().addAll(customHibernate.getAllRecords(PortionSize.class));
-            allergenList.getItems().addAll(customHibernate.getAllRecords(Allergens.class));
+            List<Cuisine> cuisines = customHibernate.getAllRecords(Cuisine.class);
+            cuisineList.getItems().addAll(cuisines);
+            portionSizeList.getItems().addAll(PortionSize.values());
+            allergenList.getItems().addAll(Allergens.values());
             restaurantList.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
 
         }
@@ -379,23 +387,26 @@ public class MainForm implements Initializable {
             return;
         }
 
-        boolean confirmed = FxUtils.confirmationWindow("Confirm Deletion", "Are you sure you want to delete this user?", "This action cannot be undone!");
+        boolean confirmed = FxUtils.confirmationWindow("Confirm Deletion", "Are you sure you want to delete this food order?", "This action cannot be undone!");
 
         if (confirmed) {
             customHibernate.delete(FoodOrder.class, selectedOrder.getId());
-            orderList.getItems().clear();
-            orderList.getItems().addAll(customHibernate.getAllRecords(FoodOrder.class));
+            fillOrderList();
         }
     }
 
-    public void createOrder(ActionEvent actionEvent) {
+    public void createOrder() {
         if(isNumeric(priceField.getText())) {
             FoodOrder foodOrder = new FoodOrder(titleField.getText(), Double.parseDouble(priceField.getText()), clientList.getValue(),foodList.getSelectionModel().getSelectedItems(), restaurantField.getValue());
+            if (foodOrder.getRestaurant() == null) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Creation error!", "No restaurant is selected!", "Please make sure you have selected a restaurant if you want to create a food order");
+                return;
+            }
+
             customHibernate.create(foodOrder);
 
 
-            orderList.getItems().clear();
-            orderList.getItems().addAll(customHibernate.getAllRecords(FoodOrder.class));
+            fillOrderList();
         }else{
             FxUtils.generateAlert(Alert.AlertType.WARNING, "Oh no!", "Wrong price format!", "Please enter a valid price!");
         }
@@ -413,8 +424,12 @@ public class MainForm implements Initializable {
         foodOrder.setPrice(Double.parseDouble(priceField.getText()));
         foodOrder.setOrderStatus(orderStatusField.getValue());
         foodOrder.setCustomer(clientList.getSelectionModel().getSelectedItem());
-
+        foodOrder.setDateUpdated(LocalDateTime.now());
         customHibernate.update(foodOrder);
+        fillOrderList();
+    }
+
+    private void fillOrderList(){
         orderList.getItems().clear();
         orderList.getItems().addAll(customHibernate.getAllRecords(FoodOrder.class));
     }
@@ -435,6 +450,7 @@ public class MainForm implements Initializable {
                 .filter(c -> c.getId() == selectedFoodOrder.getId())
                 .findFirst()
                 .ifPresent(u->orderStatusField.getSelectionModel().select(u.getOrderStatus()));
+       // foodList.getItems().stream()
         //field enable/disable
     }
     private void disableFoodOrderFields(){
@@ -444,31 +460,134 @@ public class MainForm implements Initializable {
         }
     }
 
-    public void filterOrders(ActionEvent actionEvent) {
+    public void filterOrders() {
+
+
     }
 
 
     //</editor-fold>
 
     //<editor-fold desc="Cuisine tab functionality">
-    public void createNewMenuItem() {
-        Cuisine cuisine = new Cuisine(titleCuisineField.getText(),restaurantField.getSelectionModel().getSelectedItem(), ingredientsField.getText(), allergenList.getValue(), portionSizeList.getValue(), Double.parseDouble(cuisinePriceField.getText()), isSpicy.isSelected(), isVegan.isSelected());
-        customHibernate.create(cuisine);
 
+    private void fillCuisineList(){
         cuisineList.getItems().clear();
         cuisineList.getItems().addAll(customHibernate.getAllRecords(Cuisine.class));
     }
+    public void createNewMenuItem() {
+        if(isNumeric(cuisinePriceField.getText())) {
+            Cuisine cuisine = new Cuisine(titleCuisineField.getText(), restaurantList.getSelectionModel().getSelectedItem(), ingredientsField.getText(), allergenList.getSelectionModel().getSelectedItems(), portionSizeList.getValue(), Double.parseDouble(cuisinePriceField.getText()), isSpicy.isSelected(), isVegan.isSelected());
+            String error = validateCuisineInput();
+            if (error != null) {
+                FxUtils.generateAlert(
+                        Alert.AlertType.WARNING,
+                        "Invalid input",
+                        "Cannot create menu item",
+                        error
+                );
+                return;
+            }
+            if (cuisine.getRestaurant() == null) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Creation error!", "No restaurant is selected!", "Please make sure you have selected a restaurant if you want to create a menu item");
+                return;
+            }
 
-    public void updateMenuItem(ActionEvent actionEvent) {
+            customHibernate.create(cuisine);
+        }else{
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Oh no!", "Wrong price format!", "Please enter a valid price!");
+        }
+        fillCuisineList();
     }
 
-    public void deleteMenuItem(ActionEvent actionEvent) {
+    public void updateMenuItem() {
+        Cuisine currentCuisine = cuisineList.getSelectionModel().getSelectedItem();
+        if (currentCuisine == null) {
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Update error!", "No food order selected!", "Please make sure you have selected the food order you want to update");
+            return;
+        }
+        if (currentCuisine == null) {
+            FxUtils.generateAlert(
+                    Alert.AlertType.WARNING,
+                    "Update error!",
+                    "No food item selected!",
+                    "Select the item you want to update."
+            );
+            return;
+        }
+        currentCuisine.setRestaurant(restaurantList.getSelectionModel().getSelectedItem());
+        currentCuisine.setName(titleCuisineField.getText());
+        currentCuisine.setPrice(Double.parseDouble(cuisinePriceField.getText()));
+        currentCuisine.setIngredients(ingredientsField.getText());
+        currentCuisine.setAllergens(allergenList.getSelectionModel().getSelectedItems());
+        currentCuisine.setPortionSize(portionSizeList.getValue());
+        currentCuisine.setVegan(isVegan.isSelected());
+        currentCuisine.setSpicy(isSpicy.isSelected());
+
+        customHibernate.update(currentCuisine);
+        fillCuisineList();
+    }
+
+    public void deleteMenuItem() {
+        Cuisine selectedItem = cuisineList.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "No food item selected!", "Please make sure you have selected the food item you want to delete");
+            return;
+        }
+
+        boolean confirmed = FxUtils.confirmationWindow("Confirm Deletion", "Are you sure you want to delete this food item?", "This action cannot be undone!");
+
+        if (confirmed) {
+            customHibernate.delete(Cuisine.class, selectedItem.getId());
+            fillCuisineList();
+        }
     }
 
     public void loadRestaurantMenu() {
+        cuisineList.getItems().clear();
         cuisineList.getItems().addAll(customHibernate.getRestaurantCuisine(restaurantList.getSelectionModel().getSelectedItem()));
     }
+
+    public void loadCuisineInfo() {
+        Cuisine selectedCuisine = cuisineList.getSelectionModel().getSelectedItem();
+
+        titleCuisineField.setText(selectedCuisine.getName());
+        cuisinePriceField.setText(String.valueOf(selectedCuisine.getPrice()));
+        ingredientsField.setText(selectedCuisine.getIngredients());
+        allergenList.getSelectionModel().clearSelection();
+        for (Allergens allergen : selectedCuisine.getAllergens()) {
+            allergenList.getSelectionModel().select(allergen);
+        }
+        portionSizeList.setValue(selectedCuisine.getPortionSize());
+        isVegan.setSelected(selectedCuisine.isVegan());
+        isSpicy.setSelected(selectedCuisine.isSpicy());
+        restaurantList.getItems().stream()
+                .filter(c -> c.getId() == selectedCuisine.getRestaurant().getId())
+                .findFirst()
+                .ifPresent(u->restaurantList.getSelectionModel().select(u));
+    }
+
+    private String validateCuisineInput() {
+        if (titleCuisineField.getText() == null || titleCuisineField.getText().isBlank()) {
+            return "Cuisine name cannot be empty.";
+        }
+
+        if (restaurantList.getSelectionModel().getSelectedItem() == null) {
+            return "A restaurant must be selected.";
+        }
+
+        if (!isNumeric(cuisinePriceField.getText())) {
+            return "Price must be a valid number.";
+        }
+
+        if (ingredientsField.getText() == null || ingredientsField.getText().isBlank()) {
+            return "Ingredients cannot be empty.";
+        }
+
+        if (portionSizeList.getValue() == null) {
+            return "Please select a portion size.";
+        }
+
+        return null;
+    }
     //</editor-fold>
-
-
 }
