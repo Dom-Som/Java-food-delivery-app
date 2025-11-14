@@ -22,16 +22,18 @@ public class GenericHibernate {
         try {
             entityManager = entityManagerFactory.createEntityManager();
             entityManager.getTransaction().begin();
+
+            entity = entityManager.merge(entity);
             entityManager.persist(entity);
+
             entityManager.getTransaction().commit();
-        }catch(Exception e) {
-            FxUtils.generateAlert(Alert.AlertType.INFORMATION, "Oh no", "DB error", "Something went wrong on insert.");
-
-        }finally {
-            if(entityManager != null) entityManager.close();
+        } catch (Exception e) {
+            FxUtils.generateAlert(Alert.AlertType.INFORMATION, "DB error", "Insert failed", e.getMessage());
+        } finally {
+            if (entityManager != null) entityManager.close();
         }
-
     }
+
 
     public <T> void update(T entity) {
         try {

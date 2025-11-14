@@ -1,8 +1,6 @@
 package org.kurisinis.fxControllers;
 
 import jakarta.persistence.EntityManagerFactory;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,10 +10,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kurisinis.HelloApplication;
@@ -25,11 +21,11 @@ import org.kurisinis.model.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static java.time.LocalTime.now;
 
 public class MainForm implements Initializable {
     @FXML //laikinas
@@ -120,6 +116,14 @@ public class MainForm implements Initializable {
     public ListView<Allergens> allergenList;
     @FXML
     public ComboBox<PortionSize> portionSizeList;
+
+    //</editor-fold>
+
+    //<editor-fold desc="Chat tab elements">
+    @FXML
+    public Tab chatTab;
+    public ListView<Chat> allChats;
+    public ListView<Review> chatMessages;
     //</editor-fold>
 
 
@@ -130,6 +134,7 @@ public class MainForm implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         //<editor-fold desc="User management table initialize">
         userTable.setEditable(true);
         userTable.setItems(userObservableList);//
@@ -272,6 +277,10 @@ public class MainForm implements Initializable {
             allergenList.getItems().addAll(Allergens.values());
             restaurantList.getItems().addAll(customHibernate.getAllRecords(Restaurant.class));
 
+        } else if (chatTab.isSelected()) {
+            allChats.getItems().clear();
+            allChats.getItems().addAll(customHibernate.getAllRecords(Chat.class));
+
         }
     }
 
@@ -282,6 +291,8 @@ public class MainForm implements Initializable {
         titleField.clear();
         priceField.clear();
         orderStatusField.getItems().clear();
+        filterStatus.getItems().clear();
+        filterClients.getItems().clear();
     }
 
     private void clearAllCuisineFields(){
@@ -298,13 +309,13 @@ public class MainForm implements Initializable {
     }
 
     //<editor-fold desc="User tab functionality">
-    public void loadUser(ActionEvent actionEvent) throws IOException{
+    public void loadUser() throws IOException{
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
         try{
             UserTableParameters selectedUserParams = userTable.getSelectionModel().getSelectedItem();
             if (selectedUserParams == null) {
-                FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "No user selected!", "Please make sure you have selected the user you want to delete");
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Update error!", "No user selected!", "Please make sure you have selected the user you want to update");
                 return;
             }
             User selectedUser = customHibernate.getEntityById(User.class, selectedUserParams.getId());
@@ -325,7 +336,7 @@ public class MainForm implements Initializable {
         setData(entityManagerFactory, currentUser);
     }
 
-    public void addUser(ActionEvent actionEvent) throws IOException {
+    public void addUser() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
 
@@ -358,6 +369,31 @@ public class MainForm implements Initializable {
         }catch(Exception e){
             FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "An unexpected error occurred",e.getMessage());
         }
+    }
+
+    public void loadChatFrom() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/chat-form.fxml"));
+        Parent parent = fxmlLoader.load();
+
+        try{
+            FoodOrder currentOrder = orderList.getSelectionModel().getSelectedItem();
+            if (currentOrder == null) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Selection error!", "No food order selected!", "Please make sure you have the correct order selected");
+                return;
+            }
+
+            ChatForm chatForm = fxmlLoader.getController();
+            chatForm.setData(entityManagerFactory, currentUser, currentOrder);
+        }catch(Exception e){
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Update error!", "An unexpected error occurred",e.getMessage());
+        }
+
+        Stage stage = new Stage();
+        Scene scene = new Scene(parent);
+
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
     }
     //</editor-fold>
 
@@ -425,6 +461,8 @@ public class MainForm implements Initializable {
         foodOrder.setOrderStatus(orderStatusField.getValue());
         foodOrder.setCustomer(clientList.getSelectionModel().getSelectedItem());
         foodOrder.setDateUpdated(LocalDateTime.now());
+        foodOrder.setItems(foodList.getSelectionModel().getSelectedItems());
+
         customHibernate.update(foodOrder);
         fillOrderList();
     }
@@ -450,8 +488,10 @@ public class MainForm implements Initializable {
                 .filter(c -> c.getId() == selectedFoodOrder.getId())
                 .findFirst()
                 .ifPresent(u->orderStatusField.getSelectionModel().select(u.getOrderStatus()));
-       // foodList.getItems().stream()
-        //field enable/disable
+        foodList.getItems().stream()
+                .filter(c -> c.getId() == selectedFoodOrder.getId())
+                .findFirst()
+                .ifPresent(u->foodList.getSelectionModel().select(u));
     }
     private void disableFoodOrderFields(){
         if(orderStatusField.getSelectionModel().getSelectedItem() == OrderStatus.COMPLETED){
@@ -460,10 +500,31 @@ public class MainForm implements Initializable {
         }
     }
 
-    public void filterOrders() {
 
-
+    public void loadRestaurantMenuForOrder() {
+        foodList.getItems().clear();
+        foodList.getItems().addAll(customHibernate.getRestaurantCuisine(restaurantField.getSelectionModel().getSelectedItem()));
     }
+
+    public void filterOrders() {
+        OrderStatus status = filterStatus.getValue();
+        BasicUser client = filterClients.getValue();
+        LocalDate start = filterFrom.getValue();
+        LocalDate end = filterTo.getValue();
+        Restaurant restaurant = restaurantField.getValue();
+
+        List<FoodOrder> results = customHibernate.getFilteredOrders(
+                status,
+                client,
+                start,
+                end,
+                restaurant
+        );
+
+        orderList.getItems().clear();
+        orderList.getItems().addAll(results);
+    }
+
 
 
     //</editor-fold>
@@ -501,10 +562,6 @@ public class MainForm implements Initializable {
 
     public void updateMenuItem() {
         Cuisine currentCuisine = cuisineList.getSelectionModel().getSelectedItem();
-        if (currentCuisine == null) {
-            FxUtils.generateAlert(Alert.AlertType.WARNING, "Update error!", "No food order selected!", "Please make sure you have selected the food order you want to update");
-            return;
-        }
         if (currentCuisine == null) {
             FxUtils.generateAlert(
                     Alert.AlertType.WARNING,
@@ -590,4 +647,66 @@ public class MainForm implements Initializable {
         return null;
     }
     //</editor-fold>
+
+
+    //<editor-fold desc="Chat tab functionality">
+    public void loadChatMessages() {
+        Chat selectedChat = allChats.getSelectionModel().getSelectedItem();
+        if (selectedChat == null) {
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Selection error!", "No chat selected!", "Please select a chat first.");
+            return;
+        }
+        Chat managedChat = customHibernate.getEntityById(Chat.class, selectedChat.getId());
+
+        chatMessages.getItems().clear();
+        chatMessages.getItems().addAll(managedChat.getMessages());
+    }
+
+    public void deleteMessage() {
+        Review selectedItem = chatMessages.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Deletion error!", "No message selected!", "Please make sure you have selected the message you want to delete");
+            return;
+        }
+
+        boolean confirmed = FxUtils.confirmationWindow("Confirm Deletion", "Are you sure you want to delete this message?", "This action cannot be undone!");
+        if (!confirmed) return;
+
+        selectedItem.setChat(null);
+        selectedItem.setFeedbackSender(null);
+        selectedItem.setReviewOwner(null);
+
+        customHibernate.update(selectedItem);
+        customHibernate.delete(Review.class, selectedItem.getId());
+
+        loadChatMessages();
+    }
+
+    public void loadChatForAdmin() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/chat-form.fxml"));
+        Parent parent = fxmlLoader.load();
+
+        try{
+            FoodOrder selectedOrder = allChats.getSelectionModel().getSelectedItem().getFoodOrder();
+            if (selectedOrder == null) {
+                FxUtils.generateAlert(Alert.AlertType.WARNING, "Selection error!", "No chat selected!", "Please make sure you have the correct chat selected");
+                return;
+            }
+
+            ChatForm chatForm = fxmlLoader.getController();
+            chatForm.setData(entityManagerFactory, currentUser, selectedOrder);
+        }catch(Exception e){
+            FxUtils.generateAlert(Alert.AlertType.WARNING, "Update error!", "An unexpected error occurred",e.getMessage());
+        }
+
+        Stage stage = new Stage();
+        Scene scene = new Scene(parent);
+
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+        loadChatMessages();
+    }
+    //</editor-fold>
+
 }

@@ -28,13 +28,13 @@ public class LoginForm {
     @FXML
     public PasswordField passwordField;
 
-    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("coursework");
+    private EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("coursework");;
 
     public void registerNewUser(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/kurisinis/user-form.fxml"));
         Parent parent = fxmlLoader.load();
-
         UserForm userForm = fxmlLoader.getController();
+
         userForm.setData(entityManagerFactory, null, false);
 
         Scene scene = new Scene(parent);

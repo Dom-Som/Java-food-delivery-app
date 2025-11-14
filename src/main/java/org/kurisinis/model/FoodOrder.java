@@ -30,7 +30,7 @@ public class FoodOrder implements Serializable {
     private Restaurant restaurant;
     @ManyToMany
     private List<Cuisine> items;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Chat chat;
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
@@ -65,6 +65,6 @@ public class FoodOrder implements Serializable {
 
     @Override
     public String toString() {
-        return name + " " + price + " " + customer + " " + restaurant + " " + orderStatus;
+        return name + " " + price + " " + customer + " " + restaurant + " " + orderStatus + " " + dateCreated;
     }
 }

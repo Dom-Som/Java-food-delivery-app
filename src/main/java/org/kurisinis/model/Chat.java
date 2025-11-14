@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,15 +22,23 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @ManyToOne
-    private BasicUser customer;
-    @ManyToOne
-    private Driver driver;
-    @OneToOne(mappedBy ="chat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private FoodOrder order;
-    @OneToMany(mappedBy = "chat",  cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
-    private List<ChatMessage> messages;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastMessageAt;
-    private boolean isActive;
+    private String chatText;
+    private LocalDate dateCreated;
+    @OneToOne(mappedBy ="chat")
+    private FoodOrder foodOrder;
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Review> messages;
+
+
+    public Chat(String name, FoodOrder foodOrder) {
+        this.name = name;
+        this.dateCreated = LocalDate.now();
+        this.foodOrder = foodOrder;
+        this.messages = new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + dateCreated;
+    }
 }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,6 @@ public class Cuisine implements Serializable {
     @ManyToOne
     private Restaurant restaurant;
     private String ingredients;
-    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private List<Allergens> allergens = new ArrayList<>();
     @Enumerated(EnumType.STRING)
@@ -33,6 +33,7 @@ public class Cuisine implements Serializable {
     private double price;
     private boolean spicy;
     private boolean vegan;
+    private LocalDateTime dateCreated;
 
 
 
@@ -45,6 +46,7 @@ public class Cuisine implements Serializable {
         this.price = price;
         this.spicy = spicy;
         this.vegan = vegan;
+        this.dateCreated = LocalDateTime.now();
     }
 
     @Override

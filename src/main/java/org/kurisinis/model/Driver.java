@@ -25,10 +25,6 @@ public class Driver extends BasicUser{
     private boolean isAvailable;
     private double rating;
     private int totalDeliveries;
-    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Chat> chats;
-    @OneToMany(mappedBy = "driver",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FoodOrder> myOrders;
 
     public Driver(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin, String licence, LocalDate bDate, VehicleType vehicleType, boolean isAvailable, double rating, int totalDeliveries, String vehicleInfo) {
         super(login, password, name, surname, phoneNumber, address, isAdmin);

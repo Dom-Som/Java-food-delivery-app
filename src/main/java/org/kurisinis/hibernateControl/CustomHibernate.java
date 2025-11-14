@@ -1,10 +1,10 @@
 package org.kurisinis.hibernateControl;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import javafx.scene.control.Alert;
 import org.kurisinis.consoleCourseWork.utils.FxUtils;
@@ -73,28 +73,65 @@ public class CustomHibernate extends GenericHibernate{
         return orders;
     }
 
-    public List<FoodOrder> getFilteredOrders (OrderStatus orderStatus, BasicUser client, LocalDate start, LocalDate end, Restaurant restaurant) {
+    public List<FoodOrder> getFilteredOrders(
+            OrderStatus orderStatus,
+            BasicUser client,
+            LocalDate start,
+            LocalDate end,
+            Restaurant restaurant
+    ) {
         List<FoodOrder> orders = new ArrayList<>();
-        try{
+
+        try {
             entityManager = entityManagerFactory.createEntityManager();
             CriteriaBuilder cb = entityManager.getCriteriaBuilder();
             CriteriaQuery<FoodOrder> query = cb.createQuery(FoodOrder.class);
             Root<FoodOrder> root = query.from(FoodOrder.class);
 
-            //predikatai
-            if(restaurant != null){
-                query.select(root).where(cb.equal(root.get("restaurant"), restaurant));
+            List<Predicate> predicates = new ArrayList<>();
 
-            }else{
-                query.select(root).where(cb.equal(root.get("restaurant"), restaurant));
+            // Filter by restaurant
+            if (restaurant != null) {
+                predicates.add(cb.equal(root.get("restaurant"), restaurant));
             }
-            Query q = entityManager.createQuery(query);
-            orders = (List<FoodOrder>) q.getSingleResult();
-        }catch(Exception e){
-            FxUtils.generateAlert(Alert.AlertType.WARNING, "Waring!", "Something went wrong during search for specific restaurant", e.getMessage());
+
+            // Filter by status
+            if (orderStatus != null) {
+                predicates.add(cb.equal(root.get("orderStatus"), orderStatus));
+            }
+
+            // Filter by client (customer)
+            if (client != null) {
+                predicates.add(cb.equal(root.get("customer"), client));
+            }
+
+            // Filter by date range
+            if (start != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("dateCreated"), start.atStartOfDay()));
+            }
+            if (end != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("dateCreated"), end.atTime(23, 59, 59)));
+            }
+
+            query.select(root).where(predicates.toArray(Predicate[]::new));
+
+            orders = entityManager.createQuery(query).getResultList();
+
+        } catch (Exception e) {
+            FxUtils.generateAlert(
+                    Alert.AlertType.WARNING,
+                    "Warning!",
+                    "Something went wrong during search",
+                    e.getMessage()
+            );
+        } finally {
+            if (entityManager != null) entityManager.close();
         }
+
         return orders;
     }
+
+
 
     public List<Cuisine> getRestaurantCuisine (Restaurant restaurant) {
         List<Cuisine> menu = new ArrayList<>();
@@ -121,4 +158,5 @@ public class CustomHibernate extends GenericHibernate{
         }
         return basicUsers;
     }
+
 }

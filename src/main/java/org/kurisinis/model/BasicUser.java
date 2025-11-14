@@ -18,14 +18,13 @@ import java.util.List;
 
 public class BasicUser extends User{
     protected String address;
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Chat> chats;
+
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FoodOrder> myOrders;
-    @OneToMany(mappedBy = "sender",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ChatMessage> myReviews;
+    @OneToMany(mappedBy = "reviewOwner",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> myReviews;
     @OneToMany(mappedBy = "feedbackSender",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ChatMessage> feedback;
+    private List<Review> feedback;
 
     public BasicUser(String login, String password, String name, String surname, String phoneNumber, String address, boolean isAdmin) {
         super(login, password, name, surname, phoneNumber, isAdmin);

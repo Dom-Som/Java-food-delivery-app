@@ -53,7 +53,7 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ListView fx:id="orderList" layoutX="16.0" layoutY="94.0" onMouseClicked="#loadOrderInfo" prefHeight="450.0" prefWidth="499.0">
+                        <ListView fx:id="orderList" layoutX="16.0" layoutY="94.0" onMouseClicked="#loadOrderInfo" prefHeight="457.0" prefWidth="499.0">
                            <contextMenu>
                               <ContextMenu>
                                 <items>
@@ -61,13 +61,13 @@
                                 </items>
                               </ContextMenu>
                            </contextMenu></ListView>
-                        <Button layoutX="536.0" layoutY="519.0" mnemonicParsing="false" onAction="#createOrder" text="New" />
+                        <Button layoutX="582.0" layoutY="519.0" mnemonicParsing="false" onAction="#createOrder" text="New" />
                         <Button layoutX="670.0" layoutY="519.0" mnemonicParsing="false" onAction="#updateOrder" text="Update" />
                         <Button layoutX="800.0" layoutY="519.0" mnemonicParsing="false" onAction="#deleteOrder" text="Delete" />
                         <ComboBox fx:id="clientList" layoutX="527.0" layoutY="92.0" prefWidth="150.0" promptText="Clients" />
                         <TextField fx:id="titleField" layoutX="527.0" layoutY="146.0" promptText="Title" />
                         <TextField fx:id="priceField" layoutX="527.0" layoutY="189.0" promptText="Price" />
-                        <ComboBox fx:id="restaurantField" layoutX="527.0" layoutY="228.0" prefWidth="150.0" promptText="Restaurant" />
+                        <ComboBox fx:id="restaurantField" layoutX="527.0" layoutY="228.0" onAction="#loadRestaurantMenuForOrder" prefWidth="150.0" promptText="Restaurant" />
                         <ComboBox fx:id="orderStatusField" layoutX="527.0" layoutY="277.0" prefWidth="150.0" promptText="Order status" />
                         <ComboBox fx:id="filterStatus" layoutX="16.0" layoutY="38.0" onAction="#filterOrders" prefWidth="150.0" promptText="By status" />
                         <ComboBox fx:id="filterClients" layoutX="200.0" layoutY="38.0" onAction="#filterOrders" prefWidth="150.0" promptText="By client" />
@@ -75,6 +75,7 @@
                         <DatePicker fx:id="filterFrom" layoutX="382.0" layoutY="38.0" onAction="#filterOrders" promptText="From" />
                         <DatePicker fx:id="filterTo" layoutX="583.0" layoutY="38.0" onAction="#filterOrders" promptText="To" />
                         <ListView fx:id="foodList" layoutX="686.0" layoutY="92.0" prefHeight="397.0" prefWidth="239.0" />
+                        <Button layoutX="568.0" layoutY="425.0" mnemonicParsing="false" onAction="#loadChatFrom" text="View chat" />
                      </children>
                   </AnchorPane>
                </content>
@@ -106,6 +107,28 @@
                      </children>
                   </AnchorPane>
                </content>
+            </Tab>
+            <Tab fx:id="chatTab" onSelectionChanged="#reloadTableData" text="Chat management">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ListView fx:id="allChats" layoutX="48.0" layoutY="17.0" onMouseClicked="#loadChatMessages" prefHeight="465.0" prefWidth="329.0" />
+                        <ListView fx:id="chatMessages" layoutX="444.0" layoutY="14.0" prefHeight="487.0" prefWidth="479.0">
+                           <contextMenu>
+                              <ContextMenu>
+                                <items>
+                                  <MenuItem mnemonicParsing="false" onAction="#deleteMessage" text="Delete Message" />
+                                </items>
+                              </ContextMenu>
+                           </contextMenu>
+                        </ListView>
+                        <Button layoutX="751.0" layoutY="525.0" mnemonicParsing="false" onAction="#deleteMessage" text="Delete message" />
+                        <DatePicker layoutX="48.0" layoutY="500.0" prefHeight="25.0" prefWidth="157.0" promptText="From" />
+                        <DatePicker layoutX="228.0" layoutY="500.0" prefHeight="25.0" prefWidth="149.0" promptText="To" />
+                        <Button layoutX="179.0" layoutY="538.0" mnemonicParsing="false" text="Filter chats" />
+                        <Button layoutX="540.0" layoutY="526.0" mnemonicParsing="false" onAction="#loadChatForAdmin" text="View chat" />
+                     </children></AnchorPane>
+              </content>
             </Tab>
             <Tab fx:id="altTab" onSelectionChanged="#reloadTableData" text="Alternative user management">
                <content>
